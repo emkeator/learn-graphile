@@ -19,28 +19,40 @@ create type superheroes.league as enum (
   'solo'
 );
 
-create type superheroes.species as enum (
-  'human',
-  'kryptonian',
-  'human - mutant',
-  'goddess'
-);
+-- create type superheroes.species as enum (
+--   'human',
+--   'kryptonian',
+--   'human - mutant',
+--   'goddess'
+-- );
+
+create table superheroes.species (
+    id serial primary key,
+    name text not null check (char_length(name) < 80),
+    typical_powers text not null check (char_length(typical_powers) < 1000),
+    origin text not null check (char_length(origin) < 1000)
+)
+insert into superheroes.species (name, typical_powers, origin) values ('goddess', 'Control over certain elements, immortality, flight, super strength and speed, enhanced senses and intelligence.', 'Celestial realms');
+insert into superheroes.species (name, typical_powers, origin) values ('human', 'None inherent, but may have above average intelligence and trained in arts of combat espionage.', 'Earth');
+insert into superheroes.species (name, typical_powers, origin) values ('human - mutant', 'Control over some aspect such as telekinesis or telepathy, magnetic fields, reality distortian, super healing, weather or elements - depends on the X gene.', 'Earth');
+insert into superheroes.species (name, typical_powers, origin) values ('kryptonian', 'Powers of super speed and strength, flight, laser vision, x-ray vision, freeze breath, indestructible - all powers granted by yellow sun radiation.', 'Krypton (destroyed)');
+
 
 create table superheroes.heroes (
     id serial primary key,
     name text not null check (char_length(name) < 80),
     league superheroes.league,
-    species superheroes.species
+    species integer not null references superheroes.species(id)
 )
 
-insert into superheroes.heroes (name, league, species) values ('Diana of Themiscyra', 'justice league', 'goddess');
-insert into superheroes.heroes (name, league, species) values ('Scarlet Witch', 'avengers', 'human - mutant');
-insert into superheroes.heroes (name, league, species) values ('Black Widow', 'avengers', 'human');
-insert into superheroes.heroes (name, league, species) values ('Supergirl', 'justice league', 'kryptonian');
-insert into superheroes.heroes (name, league, species) values ('Phoenix', 'xmen', 'human - mutant');
-insert into superheroes.heroes (name, league, species) values ('Storm', 'xmen', 'human - mutant');
-insert into superheroes.heroes (name, league, species) values ('Rogue', 'xmen', 'human - mutant');
-insert into superheroes.heroes (name, league, species) values ('Valkyrie', 'solo', 'goddess');
+insert into superheroes.heroes (name, league, species) values ('Diana of Themiscyra', 'justice league', 1);
+insert into superheroes.heroes (name, league, species) values ('Scarlet Witch', 'avengers', 3);
+insert into superheroes.heroes (name, league, species) values ('Black Widow', 'avengers', 2);
+insert into superheroes.heroes (name, league, species) values ('Supergirl', 'justice league', 4);
+insert into superheroes.heroes (name, league, species) values ('Phoenix', 'xmen', 3);
+insert into superheroes.heroes (name, league, species) values ('Storm', 'xmen', 3);
+insert into superheroes.heroes (name, league, species) values ('Rogue', 'xmen', 3);
+insert into superheroes.heroes (name, league, species) values ('Valkyrie', 'solo', 1);
 
 comment on table superheroes.heroes is 'A hero''s identity and league association.';
 comment on column superheroes.heroes.id is 'The primary unique identifier for the hero.';
