@@ -79,3 +79,73 @@ NB: this is written assuming MacOSX device.
     }
     ```
 
+
+# Functions 
+You can also create specific functions to customize your queries. For example:
+
+I have a table (superheroes.heroes) that lists the superhero's name, their league, and references the species id from the table superheroes.species (id, species name, origin, and typical powers).
+
+If I want to get text that describes the superhero's name and their typical powers, separated by a colon, I can make the following function:
+
+  ```
+
+  create function superheroes.heroes_hero_powers (h superheroes.heroes)
+  returns text as $$
+    select h.name || ': ' || s.typical_powers 
+    from superheroes.heroes as h join superheroes.species as s 
+    on h.species = s.id
+  $$ language sql stable;
+
+  comment on function superheroes.heroes_hero_powers(superheroes.heroes) is 'A superhero''s hero name and powers.';
+
+  ```
+
+When you create the function, give it the name in the format schemaName.tableName_functionName. In the parentheses, give it the type that it takes in, ex: int, or the node on which the function runs. My example runs on nodes of the hero table. Within the $$, goes the actual selection and joining or other manipulation of the data.
+
+<img src="./function.png" alt="infographic of how to create an SQL function for postgraphile"/>
+
+To then use this function, it is like a field on a query:
+
+  ```
+
+  {
+    allHeroes {
+      edges {
+        node {
+          heroPowers
+          league
+        }
+      }
+    }
+  }
+
+  ```
+
+  will return: 
+
+  ```
+
+  {
+    "data": {
+      "allHeroes": {
+        "edges": [
+          {
+            "node": {
+              "heroPowers": "Diana of Themiscyra: Control over certain elements, immortality, flight, super strength and speed, enhanced senses and intelligence.",
+              "league": "JUSTICE_LEAGUE"
+            }
+          },
+          ...OMITTED FROM CODE SNIPPET FOR BREVITY'S SAKE...
+        ]
+      }
+    }
+  }
+
+  ```
+
+Tada
+
+
+
+
+

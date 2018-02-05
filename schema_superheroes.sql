@@ -19,13 +19,6 @@ create type superheroes.league as enum (
   'solo'
 );
 
--- create type superheroes.species as enum (
---   'human',
---   'kryptonian',
---   'human - mutant',
---   'goddess'
--- );
-
 create table superheroes.species (
     id serial primary key,
     name text not null check (char_length(name) < 80),
@@ -56,8 +49,8 @@ insert into superheroes.heroes (name, league, species) values ('Valkyrie', 'solo
 
 comment on table superheroes.heroes is 'A hero''s identity and league association.';
 comment on column superheroes.heroes.id is 'The primary unique identifier for the hero.';
-comment on column superheroes.heroes.league is 'The league association wo which the hero belongs.';
-comment on column superheroes.heroes.species is 'The hero''s species, often the source of their power.';
+comment on column superheroes.heroes.league is 'The league association to which the hero belongs.';
+comment on column superheroes.heroes.species is 'The hero''s species, often the source of their power, references the species id.';
 
 create table superheroes.alterEgos (
     id serial primary key,
@@ -85,3 +78,14 @@ comment on column superheroes.alterEgos.id is 'The primary unique identifier for
 comment on column superheroes.alterEgos.superhero_id is 'The id of the hero associated with this alternate identity.';
 comment on column superheroes.alterEgos.occupation is 'The alternate identity''s occupation.';
 comment on column superheroes.alterEgos.is_Secret is 'Whether or not the alternate identity is a secret.';
+
+
+create function superheroes.heroes_hero_powers (h superheroes.heroes)
+returns text as $$
+  select h.name || ': ' || s.typical_powers 
+  from superheroes.heroes as h join superheroes.species as s 
+  on h.species = s.id
+$$ language sql stable;
+
+comment on function superheroes.heroes_hero_powers(superheroes.heroes) is 'A superhero''s hero name and powers.';
+
