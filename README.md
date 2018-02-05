@@ -179,6 +179,7 @@ For example:
   }
 
   ```
+So, the functions option allows you multiple ways to customize your queries.
 
 
 
