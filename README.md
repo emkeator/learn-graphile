@@ -143,7 +143,42 @@ To then use this function, it is like a field on a query:
 
   ```
 
-Tada
+Another function example, taking in text:
+
+  ```
+
+  create function superheroes.species_powers (speciesName text) 
+  returns text as $$
+    select 'ORIGIN: ' || upper(superheroes.species.origin) || ' - ' || upper(superheroes.species.name) || ': ' || superheroes.species.typical_powers 
+    from superheroes.species 
+    where superheroes.species.name = speciesName
+  $$ language sql stable;
+
+  comment on function superheroes.species_powers (text) is 'Species and powers and origin formatted.';
+
+  ```
+This function takes in text (the name of a species in the db - in this case, valid input will be 'kryptonian', 'goddess', 'human', or 'human - mutant'), and returns a description of the species formatted.
+
+For example:
+
+  ```
+
+  {
+    speciesPowers(speciesname: "kryptonian")
+  }
+
+  ```
+  will return:
+
+  ```
+
+  {
+    "data": {
+      "speciesPowers": "ORIGIN: KRYPTON (DESTROYED) - KRYPTONIAN: Powers of super speed and strength, flight, laser vision, x-ray vision, freeze breath, indestructible - all powers granted by yellow sun radiation."
+    }
+  }
+
+  ```
 
 
 

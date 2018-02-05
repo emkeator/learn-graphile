@@ -89,3 +89,14 @@ $$ language sql stable;
 
 comment on function superheroes.heroes_hero_powers(superheroes.heroes) is 'A superhero''s hero name and powers.';
 
+
+drop function superheroes.species_powers(text);
+
+create function superheroes.species_powers (speciesName text) 
+returns text as $$
+  select 'ORIGIN: ' || upper(superheroes.species.origin) || ' - ' || upper(superheroes.species.name) || ': ' || superheroes.species.typical_powers 
+  from superheroes.species 
+  where superheroes.species.name = speciesName
+$$ language sql stable;
+
+comment on function superheroes.species_powers (text) is 'Species and powers and origin formatted.';
